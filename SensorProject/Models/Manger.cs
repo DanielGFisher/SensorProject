@@ -8,5 +8,6 @@ namespace SensorProject.Models
 {
     internal class Manger
     {
+
     }
 }
