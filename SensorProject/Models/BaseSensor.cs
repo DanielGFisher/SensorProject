@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace SensorProject.Models
 {
-    internal class BaseSensor
+    public class BaseSensor
     {
         public string SensorName { get; set; }
         

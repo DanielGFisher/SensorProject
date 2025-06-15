@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    class BaseIranianAgent
+    public class BaseIranianAgent
     {
         protected string _TerroristType;
         public List<string> _Weaknesses { get; set; }

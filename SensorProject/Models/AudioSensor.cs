@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    internal class AudioSensor : BaseSensor
+    public class AudioSensor : BaseSensor
     {
-        public new string SensorName { get; set; }
 
-        AudioSensor(string name) : base(name)
+        public AudioSensor(string name) : base(name)
         {
-            SensorName = name;
         }
     }
 }
