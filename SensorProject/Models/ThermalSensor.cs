@@ -8,23 +8,17 @@ namespace SensorProject.Models
 {
     public class ThermalSensor : BaseSensor
     {
+        private static readonly Random rand = new Random();
 
-        public ThermalSensor(string name) : base(name)
-        {
-        }
+        public ThermalSensor(string name) : base(name) { }
 
         public string RevealSensor(BaseIranianAgent agent)
         {
-            Random rand = new Random();
-            if (this.Activate(agent))
-            {
-                string revealWeakness = agent._Weaknesses[rand.Next(agent._Weaknesses.Count)];
-                return $"One of the sensors is: {revealWeakness}";
-            }
-            else
-            {
-                return "Invalid operation - activation unsuccessful";
-            }
+            if (!agent.Weaknesses.Contains(SensorName))
+                return "Reveal failed: Thermal scan ineffective";
+
+            var intel = agent.Weaknesses[rand.Next(agent.Weaknesses.Count)];
+            return $"Intel gained: One of the weaknesses is '{intel}'.";
         }
     }
 }

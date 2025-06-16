@@ -6,7 +6,25 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    internal class PulseSensor
+    public class PulseSensor : BaseSensor
     {
+
+        public PulseSensor(string name) : base(name) { }
+
+        public override bool Activate(BaseIranianAgent agent)
+        {
+            if (!IsActive || HasMatched)
+            {
+                return false;
+            }
+
+            if (agent.Weaknesses.Contains(SensorName))
+            {
+                HasMatched = true;
+                return true;
+            }
+
+            return false;
+        }
     }
 }

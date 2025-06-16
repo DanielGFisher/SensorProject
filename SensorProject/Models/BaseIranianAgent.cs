@@ -8,36 +8,31 @@ namespace SensorProject.Models
 {
     public class BaseIranianAgent
     {
-        protected string _TerroristType;
-        public List<string> _Weaknesses { get; set; }
+        protected string AgentType;
+        public int SensorAmount { get; set; }
+        public List<string> Weaknesses { get; }
 
-        public BaseIranianAgent(List<string> weaknesses)
+        public BaseIranianAgent(List<string> allSensorTypes)
         {
-            _Weaknesses = weaknesses;
+            SensorAmount = 2;
+            Weaknesses = GenerateWeaknesses(allSensorTypes);
         }
 
-        public static List<string> CreateWeaknesses(List<string> allSensorTypes)
+        public static List<string> GenerateWeaknesses(List<string> allSensorTypes)
         {
-            Random rand = new Random();
-            List<string> newWeakness = new();
-
+            var rand = new Random();
+            var weaknesses = new List<string>();
             for (int i = 0; i < 2; i++)
             {
-               newWeakness.Add(allSensorTypes[rand.Next(allSensorTypes.Count)]);
+                var sensor = allSensorTypes[rand.Next(allSensorTypes.Count)];
+                weaknesses.Add(sensor);
             }
-
-            return newWeakness;
+            return weaknesses;
         }
 
-        public int ParseSensors(List<BaseSensor> sensors)
+        public string RevealWeaknesses()
         {
-            int confirmedSensors = 0;
-
-            foreach (var sensor in sensors)
-            {
-                if (_Weaknesses.Contains(sensor.SensorName)) confirmedSensors++;
-            }
-            return confirmedSensors;
+            return string.Join(", ", Weaknesses);
         }
     }
 }
