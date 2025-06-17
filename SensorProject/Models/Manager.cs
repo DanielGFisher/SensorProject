@@ -25,8 +25,9 @@ namespace SensorProject.Models
 
                 if (levelComplete)
                 {
-                    if (level == 3)
+                    if (level == 2)
                     {
+                        Console.WriteLine("Mission Complete - You Win!");
                         gameRunning = false;
                     }
                     Console.WriteLine($"Level {level} Complete! Advancing to the next level\n");
@@ -64,7 +65,7 @@ namespace SensorProject.Models
                     break;
                 }
 
-                BaseSensor newSensor = SensorFactory.CreateSensor(input);
+                var newSensor = SensorFactory.CreateSensor(input);
                 if (newSensor != null)
                 {
                     sensors.Add(newSensor);
@@ -76,8 +77,9 @@ namespace SensorProject.Models
                     continue;
                 }
 
-                foreach (BaseSensor sensor in sensors)
+                foreach (var sensor in sensors)
                 {
+                    sensor.Uses++;
                     if (!sensor.IsActive || sensor.HasMatched) continue;
 
                     string type = sensor.SensorName;
@@ -90,9 +92,13 @@ namespace SensorProject.Models
                         matchedCount++;
                         Console.WriteLine($"{type} matched a weakness!");
                     }
+                    if (sensor is ThermalSensor thermal)
+                    {
+                        Console.WriteLine(thermal.RevealSensor(agent));
+                    }
                 }
 
-                RemoveInactiveSensors();
+                matchedCount = RemoveInactiveAndUnmatchedSensors(matchedCount);
 
                 if (agent is SquadLeader squadLeader)
                 {
@@ -101,20 +107,22 @@ namespace SensorProject.Models
                     if (index != -1 && index < sensors.Count)
                     {
                         string removedSensorType = sensors[index].SensorName;
-                        sensors.RemoveAt(index);
 
                         if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
                         {
-                            matchedWeaknesses[removedSensorType]--;
+                            matchedWeaknesses[removedSensorType] = Math.Max(0, matchedWeaknesses[removedSensorType] - 1);
                             matchedCount--;
                         }
+
+                        sensors.RemoveAt(index);                   
                     }
                 }
+
 
                 Console.WriteLine($"{matchedCount}/{agent.SensorAmount} weaknesses matched");
                 if (matchedCount >= agent.SensorAmount)
                 {
-                    Console.WriteLine($"Agent exposed! Level {level} complete!");
+                    Console.WriteLine($"{agent.RevealAgentType()} exposed!");
                     gameRunning = false;
                     return true;
                 }
@@ -122,21 +130,32 @@ namespace SensorProject.Models
             return false;
         }
 
-        private void RemoveInactiveSensors()
+        public int RemoveInactiveAndUnmatchedSensors(int count)
         {
             for (int i = sensors.Count - 1; i >= 0; i--)
             {
-                if (!sensors[i].IsActive)
+                var sensor = sensors[i];
+                string sensorType = sensor.SensorName;
+
+                bool wasMatched = sensor.HasMatched;
+                bool isInactive = !sensor.IsActive;
+
+                if (isInactive || !wasMatched || (sensors[i] is PulseSensor && sensors[i].Uses == 3))
                 {
-                    if (matchedWeaknesses.ContainsKey(sensors[i].SensorName))
+                    if (wasMatched &&
+                        matchedWeaknesses.ContainsKey(sensorType) &&
+                        matchedWeaknesses[sensorType] > 0)
                     {
-                        matchedWeaknesses[sensors[i].SensorName]--;
+                        matchedWeaknesses[sensorType] = Math.Max(0, matchedWeaknesses[sensorType] - 1);
+                        count--;
                     }
 
-                    Console.WriteLine($"{sensors[i].SensorName} sensor removed");
+                    Console.WriteLine($"{sensorType} sensor removed!");
                     sensors.RemoveAt(i);
                 }
             }
+            return count;
         }
+
     }
 }

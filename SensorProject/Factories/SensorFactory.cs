@@ -18,7 +18,7 @@ namespace SensorProject.Factories
             if (type == "THERMAL") return new ThermalSensor("Thermal");
             if (type == "PULSE") return new PulseSensor("Pulse");
 
-            else return null;
+            else return null!;
         }
     }
 }

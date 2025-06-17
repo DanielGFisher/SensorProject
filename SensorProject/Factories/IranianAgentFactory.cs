@@ -17,7 +17,7 @@ namespace SensorProject.Factories
             if (level == 1) return new BaseIranianAgent(weaknesses);
             if (level == 2) return new SquadLeader(weaknesses);
 
-            else return null;
+            else return new BaseIranianAgent(weaknesses);
         }
     }
 }
