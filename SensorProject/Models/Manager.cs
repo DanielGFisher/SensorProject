@@ -72,9 +72,17 @@ namespace SensorProject.Models
                 if (agent is SquadLeader squadLeader)
                 {
                     int index = squadLeader.RemoveSensor(sensors);
+
                     if (index != -1 && index < sensors.Count)
                     {
-                        matchedWeaknesses[sensors[index].SensorName]--;
+                        string removedSensorType = sensors[index].SensorName;
+                        sensors.RemoveAt(index);
+
+                        if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
+                        {
+                            matchedWeaknesses[removedSensorType]--;
+                            matchedCount--;
+                        }
                     }
                 }
 
