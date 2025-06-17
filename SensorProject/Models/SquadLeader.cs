@@ -25,7 +25,7 @@ namespace SensorProject.Models
             return weaknesses;
         }
 
-        public void RemoveSensor(List<BaseSensor> sensors)
+        public int RemoveSensor(List<BaseSensor> sensors)
         {
             turnCount++;
 
@@ -35,7 +35,9 @@ namespace SensorProject.Models
                 int index = rand.Next(sensors.Count);
                 Console.WriteLine($"Sensor Sabotaged: {sensors[index].SensorName}");
                 sensors.RemoveAt(index);
+                return index;
             }
+            return -1;
         }
     }
 }

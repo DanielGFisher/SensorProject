@@ -8,7 +8,7 @@ namespace SensorProject.Models
         private List<BaseSensor> sensors = new List<BaseSensor>();
         private BaseIranianAgent agent;
         private Dictionary<string, int> matchedWeaknesses = new Dictionary<string, int>();
-        private List<string> weaknesses = new() { "Thermal", "Audio", "Pulse" }
+        private List<string> weaknesses = new() { "Thermal", "Audio", "Pulse" };
 
         public void StartGame()
         {
@@ -43,7 +43,7 @@ namespace SensorProject.Models
                 if (newSensor != null)
                 {
                     sensors.Add(newSensor);
-                    Console.WriteLine($"{newSensor.SensorName} sensor added.");
+                    Console.WriteLine($"{newSensor.SensorName} sensor added");
                 }
                 else
                 {
@@ -71,13 +71,17 @@ namespace SensorProject.Models
 
                 if (agent is SquadLeader squadLeader)
                 {
-                    squadLeader.RemoveSensor(sensors);
+                    int index = squadLeader.RemoveSensor(sensors);
+                    if (index != -1 && index < sensors.Count)
+                    {
+                        matchedWeaknesses[sensors[index].SensorName]--;
+                    }
                 }
 
                 Console.WriteLine($"{matchedCount}/{agent.SensorAmount} weaknesses matched");
                 if (matchedCount >= agent.SensorAmount)
                 {
-                    Console.WriteLine("Agent exposed! Mission complete.");
+                    Console.WriteLine("Agent exposed! Mission complete!");
                     gameRunning = false;
                 }
             }
@@ -106,7 +110,7 @@ namespace SensorProject.Models
                         matchedWeaknesses[sensors[i].SensorName]--;
                     }
 
-                    Console.WriteLine($"{sensors[i].SensorName} sensor removed.");
+                    Console.WriteLine($"{sensors[i].SensorName} sensor removed");
                     sensors.RemoveAt(i);
                 }
             }
