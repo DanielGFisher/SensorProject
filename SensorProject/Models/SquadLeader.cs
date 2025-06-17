@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
     internal class SquadLeader : BaseIranianAgent
     {
+        private int turnCount = 0;
 
         public SquadLeader(List<string> allSensorTypes) : base(allSensorTypes)
         {
@@ -15,10 +13,29 @@ namespace SensorProject.Models
             SensorAmount = 4;
         }
 
+        public override List<string> GenerateWeaknesses(List<string> allSensorTypes)
+        {
+            var rand = new Random();
+            var weaknesses = new List<string>();
+            for (int i = 0; i < 4; i++)
+            {
+                var sensor = allSensorTypes[rand.Next(allSensorTypes.Count)];
+                weaknesses.Add(sensor);
+            }
+            return weaknesses;
+        }
+
         public void RemoveSensor(List<BaseSensor> sensors)
         {
-            Random rand = new();
-            sensors.Remove(sensors[rand.Next(0, sensors.Count())]);
+            turnCount++;
+
+            if (turnCount % 3 == 0 && sensors.Count > 0)
+            {
+                Random rand = new Random();
+                int index = rand.Next(sensors.Count);
+                Console.WriteLine($"Sensor Sabotaged: {sensors[index].SensorName}");
+                sensors.RemoveAt(index);
+            }
         }
     }
 }

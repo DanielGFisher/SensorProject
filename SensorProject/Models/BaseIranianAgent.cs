@@ -14,11 +14,12 @@ namespace SensorProject.Models
 
         public BaseIranianAgent(List<string> allSensorTypes)
         {
+            AgentType = "Foot-Soldier";
             SensorAmount = 2;
             Weaknesses = GenerateWeaknesses(allSensorTypes);
         }
 
-        public static List<string> GenerateWeaknesses(List<string> allSensorTypes)
+        public virtual List<string> GenerateWeaknesses(List<string> allSensorTypes)
         {
             var rand = new Random();
             var weaknesses = new List<string>();
@@ -33,6 +34,11 @@ namespace SensorProject.Models
         public string RevealWeaknesses()
         {
             return string.Join(", ", Weaknesses);
+        }
+
+        public string RevealAgentType()
+        {
+            return $"{AgentType}";
         }
     }
 }
