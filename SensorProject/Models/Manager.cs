@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SensorProject.Factories;
+using System;
 using System.Collections.Generic;
 
 namespace SensorProject.Models
@@ -8,18 +9,42 @@ namespace SensorProject.Models
         private List<BaseSensor> sensors = new List<BaseSensor>();
         private BaseIranianAgent agent;
         private Dictionary<string, int> matchedWeaknesses = new Dictionary<string, int>();
-        private List<string> weaknesses = new() { "Thermal", "Audio", "Pulse" };
+        private IranianAgentFactory AgentFactory = new();
+        private SensorFactory SensorFactory = new();
+        private int level = 1;
 
         public void StartGame()
         {
-            List<BaseIranianAgent> agents = new List<BaseIranianAgent>
-            {
-                new BaseIranianAgent(weaknesses),
-                new SquadLeader(weaknesses)
-            };
+            Console.WriteLine("- Game Starting -\n");
 
-            Random rand = new Random();
-            agent = agents[rand.Next(agents.Count)];
+            bool gameRunning = true;
+            while (gameRunning)
+            {
+                Console.WriteLine($"Level - {level}");
+                bool levelComplete = PlayLevel();
+
+                if (levelComplete)
+                {
+                    if (level == 3)
+                    {
+                        gameRunning = false;
+                    }
+                    Console.WriteLine($"Level {level} Complete! Advancing to the next level\n");
+                    level++;
+                }
+                else
+                {
+                    Console.WriteLine("Game Over! Try again");
+                    break;
+                }
+            }
+        }
+        
+        public bool PlayLevel()
+        {
+            matchedWeaknesses.Clear();
+            sensors.Clear();
+            agent = AgentFactory.CreateAgent(level);
 
             Console.WriteLine($"You are facing: {agent.RevealAgentType()}");
             Console.WriteLine($"Agent weaknesses: {agent.RevealWeaknesses()}");
@@ -39,7 +64,7 @@ namespace SensorProject.Models
                     break;
                 }
 
-                BaseSensor newSensor = CreateSensor(input);
+                BaseSensor newSensor = SensorFactory.CreateSensor(input);
                 if (newSensor != null)
                 {
                     sensors.Add(newSensor);
@@ -89,23 +114,13 @@ namespace SensorProject.Models
                 Console.WriteLine($"{matchedCount}/{agent.SensorAmount} weaknesses matched");
                 if (matchedCount >= agent.SensorAmount)
                 {
-                    Console.WriteLine("Agent exposed! Mission complete!");
+                    Console.WriteLine($"Agent exposed! Level {level} complete!");
                     gameRunning = false;
+                    return true;
                 }
             }
+            return false;
         }
-
-        private BaseSensor CreateSensor(string type)
-        {
-            type = type.ToUpper();
-
-            if (type == "AUDIO") return new AudioSensor("Audio");
-            if (type == "THERMAL") return new ThermalSensor("Thermal");
-            if (type == "PULSE") return new PulseSensor("Pulse");
-
-            else return null;
-        }
-
 
         private void RemoveInactiveSensors()
         {
