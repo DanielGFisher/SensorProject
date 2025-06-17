@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="SensorProject_DB.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="DAL\" />
   </ItemGroup>
 
