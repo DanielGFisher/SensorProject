@@ -1,110 +1,175 @@
-﻿using System;
+﻿using SensorProject.Factories;
+using System;
 using System.Collections.Generic;
 
 namespace SensorProject.Models
 {
     public class Manager
     {
-        private List<BaseSensor> sensors = new();
+        private List<BaseSensor> sensors = new List<BaseSensor>();
         private BaseIranianAgent agent;
-        private List<string> sensorTypes = new List<string> { "Thermal", "Audio", "Pulse" };
-        private Dictionary<string, int> matchedWeaknesses = new();
+        private Dictionary<string, int> matchedWeaknesses = new Dictionary<string, int>();
+        private IranianAgentFactory AgentFactory = new();
+        private SensorFactory SensorFactory = new();
+        private int level = 1;
 
         public void StartGame()
         {
-            agent = new BaseIranianAgent(sensorTypes);
-            int activeCount = 0;
-            bool running = true;
+            Console.WriteLine("- Game Starting -\n");
 
-            Console.WriteLine(agent.RevealWeaknesses());
-
-            while (running)
+            bool gameRunning = true;
+            while (gameRunning)
             {
-                Console.WriteLine("Available sensors: Audio, Thermal, Pulse");
-                Console.Write("Enter sensor to add (or type 'exit' to exit): ");
-                string input = Console.ReadLine();
+                Console.WriteLine($"Level - {level}");
+                bool levelComplete = PlayLevel();
 
-                switch (input.ToUpper())
+                if (levelComplete)
                 {
-                    case "EXIT":
-                        running = false;
-                        break;
+                    if (level == 2)
+                    {
+                        Console.WriteLine("Mission Complete - You Win!");
+                        gameRunning = false;
+                    }
+                    Console.WriteLine($"Level {level} Complete! Advancing to the next level\n");
+                    level++;
+                }
+                else
+                {
+                    Console.WriteLine("Game Over! Try again");
+                    break;
+                }
+            }
+        }
+        
+        public bool PlayLevel()
+        {
+            matchedWeaknesses.Clear();
+            sensors.Clear();
+            agent = AgentFactory.CreateAgent(level);
 
-                    case "THERMAL":
-                        var thermal = new ThermalSensor("Thermal");
-                        sensors.Add(thermal);
-                        Console.WriteLine("Thermal sensor added");
-                        Console.WriteLine(thermal.RevealSensor(agent));
-                        break;
+            Console.WriteLine($"You are facing: {agent.RevealAgentType()}");
+            Console.WriteLine($"Agent weaknesses: {agent.RevealWeaknesses()}");
 
-                    case "AUDIO":
-                        sensors.Add(new AudioSensor("Audio"));
-                        Console.WriteLine("Audio sensor added");
-                        break;
+            int matchedCount = 0;
+            bool gameRunning = true;
 
-                    case "PULSE":
-                        sensors.Add(new PulseSensor("Pulse"));
-                        Console.WriteLine("Pulse sensor added");
-                        break;
+            while (gameRunning)
+            {
+                Console.WriteLine("\nAvailable sensors: Audio, Thermal, Pulse, ");
+                Console.Write("Enter sensor type (or type 'exit' to quit): ");
+                string input = Console.ReadLine().ToUpper();
 
-                    default:
-                        Console.WriteLine("Invalid sensor type");
-                        continue;
+                if (input == "EXIT")
+                {
+                    gameRunning = false;
+                    break;
                 }
 
-                for (int i = sensors.Count - 1; i >= 0; i--)
+                var newSensor = SensorFactory.CreateSensor(input);
+                if (newSensor != null)
                 {
-                    BaseSensor sensor = sensors[i];
-                    sensor.IncreaseUsage();
+                    sensors.Add(newSensor);
+                    Console.WriteLine($"{newSensor.SensorName} sensor added");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid sensor type - Try again");
+                    continue;
+                }
 
-                    if (sensor is PulseSensor && sensor.Uses == 3 && sensor.HasMatched)
-                    {
-                        matchedWeaknesses["Pulse"] -= 1;
-                        sensors.RemoveAt(i);
-                        activeCount--;
-                        Console.WriteLine("Pulse sensor broken - 3 uses");
-                        continue;
-                    }
-
-                    if (!sensor.IsActive || sensor.HasMatched)
-                    {
-                        continue;
-                    }
+                foreach (var sensor in sensors)
+                {
+                    sensor.Uses++;
+                    if (!sensor.IsActive || sensor.HasMatched) continue;
 
                     string type = sensor.SensorName;
-
-                    int timesMatched = 0;
-                    if (matchedWeaknesses.ContainsKey(type))
-                    {
-                        timesMatched = matchedWeaknesses[type];
-                    }
-
-                    int totalNeeded = 0;
-
-                    foreach (var weakness in agent.Weaknesses)
-                    {
-                        if (weakness == type)
-                        {
-                            totalNeeded++;
-                        }
-                    }
+                    int timesMatched = matchedWeaknesses.ContainsKey(type) ? matchedWeaknesses[type] : 0;
+                    int totalNeeded = agent.Weaknesses.FindAll(w => w == type).Count;
 
                     if (timesMatched < totalNeeded && sensor.Activate(agent))
                     {
                         matchedWeaknesses[type] = timesMatched + 1;
-                        activeCount++;
-                        Console.WriteLine(type + " matched a weakness.");
+                        matchedCount++;
+                        Console.WriteLine($"{type} matched a weakness!");
+                    }
+                    if (sensor is ThermalSensor thermal)
+                    {
+                        Console.WriteLine(thermal.RevealSensor(agent));
+                    }
+                    if (sensor is SignalSensor signal)
+                    {
+                        Console.WriteLine(signal.RevealField(agent);
+                    }
+                    if (sensor is LightSensor light)
+                    {
+                        Console.WriteLine(light.RevealTwoFields(agent));
                     }
                 }
 
-                Console.WriteLine($"{activeCount}/2 weaknesses matched");
+                matchedCount = RemoveInactiveAndUnmatchedSensors(matchedCount);
 
-                if (activeCount == 2)
+                if (agent is SquadLeader squadLeader)
                 {
-                    Console.WriteLine("Agent exposed! Mission complete");
-                    running = false;
+                    foreach (var sensor in sensors)
+                    {
+                        if (sensor is MagneticSensor magneticSensor && magneticSensor.Uses > 2)
+                        {
+                            int index = squadLeader.RemoveSensor(sensors);
+
+                            if (index != -1 && index < sensors.Count)
+                            {
+                                string removedSensorType = sensors[index].SensorName;
+
+                                if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
+                                {
+                                    matchedWeaknesses[removedSensorType] = Math.Max(0, matchedWeaknesses[removedSensorType] - 1);
+                                    matchedCount--;
+                                }
+
+                                sensors.RemoveAt(index);
+                            }
+                        }
+                    }
+                }
+
+
+                Console.WriteLine($"{matchedCount}/{agent.SensorAmount} weaknesses matched");
+                if (matchedCount >= agent.SensorAmount)
+                {
+                    Console.WriteLine($"{agent.RevealAgentType()} exposed!");
+                    gameRunning = false;
+                    return true;
                 }
             }
+            return false;
         }
+
+        public int RemoveInactiveAndUnmatchedSensors(int count)
+        {
+            for (int i = sensors.Count - 1; i >= 0; i--)
+            {
+                var sensor = sensors[i];
+                string sensorType = sensor.SensorName;
+
+                bool wasMatched = sensor.HasMatched;
+                bool isInactive = !sensor.IsActive;
+
+                if (isInactive || !wasMatched || (sensors[i] is PulseSensor && sensors[i].Uses == 3))
+                {
+                    if (wasMatched &&
+                        matchedWeaknesses.ContainsKey(sensorType) &&
+                        matchedWeaknesses[sensorType] > 0)
+                    {
+                        matchedWeaknesses[sensorType] = Math.Max(0, matchedWeaknesses[sensorType] - 1);
+                        count--;
+                    }
+
+                    Console.WriteLine($"{sensorType} sensor removed!");
+                    sensors.RemoveAt(i);
+                }
+            }
+            return count;
+        }
+
     }
 }

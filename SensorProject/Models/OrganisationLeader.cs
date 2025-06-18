@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    internal class SquadLeader : BaseIranianAgent
+    internal class OrganisationLeader : BaseIranianAgent
     {
         private int turnCount = 0;
 
-        public SquadLeader(List<string> allSensorTypes) : base(allSensorTypes)
+        public OrganisationLeader(List<string> allSensorTypes) : base(allSensorTypes)
         {
             AgentType = "Squad-Leader";
-            SensorAmount = 4;
+            SensorAmount = 8;
         }
 
         public int RemoveSensor(List<BaseSensor> sensors)
@@ -29,3 +32,4 @@ namespace SensorProject.Models
         }
     }
 }
+

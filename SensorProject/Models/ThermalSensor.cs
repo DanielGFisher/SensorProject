@@ -17,7 +17,7 @@ namespace SensorProject.Models
             if (!agent.Weaknesses.Contains(SensorName))
                 return "Reveal failed: Thermal scan ineffective";
 
-            var intel = agent.Weaknesses[rand.Next(agent.Weaknesses.Count)];
+            string intel = agent.Weaknesses[rand.Next(agent.Weaknesses.Count)];
             return $"Intel gained: One of the weaknesses is '{intel}'.";
         }
     }
