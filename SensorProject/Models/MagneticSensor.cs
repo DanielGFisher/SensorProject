@@ -8,6 +8,10 @@ namespace SensorProject.Models
 {
     internal class MagneticSensor : BaseSensor
     {
-        public MagneticSensor(string name) : base(name) { }
+        public int ProtectionSkips { get; set; }
+        public MagneticSensor(string name) : base(name) 
+        {
+            ProtectionSkips = 2;
+        }
     }
 }

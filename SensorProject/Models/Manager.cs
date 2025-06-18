@@ -25,7 +25,7 @@ namespace SensorProject.Models
 
                 if (levelComplete)
                 {
-                    if (level == 2)
+                    if (level == 4)
                     {
                         Console.WriteLine("Mission Complete - You Win!");
                         gameRunning = false;
@@ -55,7 +55,7 @@ namespace SensorProject.Models
 
             while (gameRunning)
             {
-                Console.WriteLine("\nAvailable sensors: Audio, Thermal, Pulse, ");
+                Console.WriteLine("\nAvailable sensors: Audio, Thermal, Pulse, Magnetic, Signal, Light");
                 Console.Write("Enter sensor type (or type 'exit' to quit): ");
                 string input = Console.ReadLine().ToUpper();
 
@@ -98,43 +98,49 @@ namespace SensorProject.Models
                     }
                     if (sensor is SignalSensor signal)
                     {
-                        Console.WriteLine(signal.RevealField(agent);
+                        Console.WriteLine(signal.RevealField(agent));
                     }
                     if (sensor is LightSensor light)
                     {
                         Console.WriteLine(light.RevealTwoFields(agent));
                     }
                 }
+                if (agent is SquadLeader leader)
+                {
+                    leader.turnCount++;
+                }
 
                 matchedCount = RemoveInactiveAndUnmatchedSensors(matchedCount);
 
-                if (agent is SquadLeader squadLeader)
+                if (agent is SquadLeader squadLeader && squadLeader.turnCount % 3 == 0)
                 {
-                    foreach (var sensor in sensors)
+                    int removalAmount = ((agent is OrganisationLeader || agent is SeniorCommander)) ? 2 : 1;
+
+                    foreach (var mag in sensors.OfType<MagneticSensor>())
                     {
-                        if (sensor is MagneticSensor magneticSensor && magneticSensor.Uses > 2)
+                        if (mag.ProtectionSkips > 0) mag.ProtectionSkips--;
+                    }
+
+                    List<BaseSensor> removable = sensors.Where(sensor => !(sensor is MagneticSensor magnetic && magnetic.ProtectionSkips > 0)).ToList();
+                    Random rand = new Random();
+                    for (int i = 0; i < removalAmount && removable.Count > 0; i++)
+                    {
+                        int pick = rand.Next(removable.Count);
+                        BaseSensor toRemove = removable[pick];
+                        sensors.Remove(toRemove);
+
+                        if (matchedWeaknesses.TryGetValue(toRemove.SensorName, out var cnt) && cnt > 0)
                         {
-                            int index = squadLeader.RemoveSensor(sensors);
-
-                            if (index != -1 && index < sensors.Count)
-                            {
-                                string removedSensorType = sensors[index].SensorName;
-
-                                if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
-                                {
-                                    matchedWeaknesses[removedSensorType] = Math.Max(0, matchedWeaknesses[removedSensorType] - 1);
-                                    matchedCount--;
-                                }
-
-                                sensors.RemoveAt(index);
-                            }
+                            matchedWeaknesses[toRemove.SensorName] = cnt - 1;
+                            matchedCount--;
                         }
+
+                        removable.RemoveAt(pick);
                     }
                 }
 
-
-                Console.WriteLine($"{matchedCount}/{agent.SensorAmount} weaknesses matched");
-                if (matchedCount >= agent.SensorAmount)
+                Console.WriteLine($"{matchedCount}/{agent.RevealSensorAmount()} weaknesses matched");
+                if (matchedCount >= agent.RevealSensorAmount())
                 {
                     Console.WriteLine($"{agent.RevealAgentType()} exposed!");
                     gameRunning = false;

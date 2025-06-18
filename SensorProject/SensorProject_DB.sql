@@ -25,3 +25,14 @@
 --     FOREIGN KEY (AgentID) REFERENCES Agents(AgentID)
 -- );
 
+-- CREATE TABLE people (
+--   id INT PRIMARY KEY,
+--   first_name VARCHAR(100),
+--   last_name VARCHAR(100),
+--   location VARCHAR(100),
+--   favorite_weapon VARCHAR(100),
+--   contact_number VARCHAR(50),
+--   secret_phrase VARCHAR(100),
+--   affiliation VARCHAR(100),
+--   is_exposed BOOLEAN DEFAULT FALSE
+-- );
