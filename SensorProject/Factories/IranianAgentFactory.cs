@@ -10,7 +10,7 @@ namespace SensorProject.Factories
 {
     public class IranianAgentFactory : IIranianFactory
     {
-        private List<string> weaknesses = new() { "Thermal", "Audio", "Pulse" };
+        private List<string> weaknesses = new() { "Thermal", "Audio", "Pulse", "Magnetic" };
 
         public BaseIranianAgent CreateAgent(int level)
         {

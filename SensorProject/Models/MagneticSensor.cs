@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    public class PulseSensor : BaseSensor
+    internal class MagneticSensor : BaseSensor
     {
-        public PulseSensor(string name) : base(name) { }
+        public MagneticSensor(string name) : base(name) { }
     }
 }
-

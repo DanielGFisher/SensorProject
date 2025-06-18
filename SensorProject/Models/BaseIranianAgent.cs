@@ -23,7 +23,7 @@ namespace SensorProject.Models
         {
             var rand = new Random();
             var weaknesses = new List<string>();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < SensorAmount; i++)
             {
                 var sensor = allSensorTypes[rand.Next(allSensorTypes.Count)];
                 weaknesses.Add(sensor);

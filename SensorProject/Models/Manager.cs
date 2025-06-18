@@ -55,7 +55,7 @@ namespace SensorProject.Models
 
             while (gameRunning)
             {
-                Console.WriteLine("\nAvailable sensors: Audio, Thermal, Pulse");
+                Console.WriteLine("\nAvailable sensors: Audio, Thermal, Pulse, ");
                 Console.Write("Enter sensor type (or type 'exit' to quit): ");
                 string input = Console.ReadLine().ToUpper();
 
@@ -96,25 +96,39 @@ namespace SensorProject.Models
                     {
                         Console.WriteLine(thermal.RevealSensor(agent));
                     }
+                    if (sensor is SignalSensor signal)
+                    {
+                        Console.WriteLine(signal.RevealField(agent);
+                    }
+                    if (sensor is LightSensor light)
+                    {
+                        Console.WriteLine(light.RevealTwoFields(agent));
+                    }
                 }
 
                 matchedCount = RemoveInactiveAndUnmatchedSensors(matchedCount);
 
                 if (agent is SquadLeader squadLeader)
                 {
-                    int index = squadLeader.RemoveSensor(sensors);
-
-                    if (index != -1 && index < sensors.Count)
+                    foreach (var sensor in sensors)
                     {
-                        string removedSensorType = sensors[index].SensorName;
-
-                        if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
+                        if (sensor is MagneticSensor magneticSensor && magneticSensor.Uses > 2)
                         {
-                            matchedWeaknesses[removedSensorType] = Math.Max(0, matchedWeaknesses[removedSensorType] - 1);
-                            matchedCount--;
-                        }
+                            int index = squadLeader.RemoveSensor(sensors);
 
-                        sensors.RemoveAt(index);                   
+                            if (index != -1 && index < sensors.Count)
+                            {
+                                string removedSensorType = sensors[index].SensorName;
+
+                                if (matchedWeaknesses.ContainsKey(removedSensorType) && matchedWeaknesses[removedSensorType] > 0)
+                                {
+                                    matchedWeaknesses[removedSensorType] = Math.Max(0, matchedWeaknesses[removedSensorType] - 1);
+                                    matchedCount--;
+                                }
+
+                                sensors.RemoveAt(index);
+                            }
+                        }
                     }
                 }
 
