@@ -9,8 +9,8 @@ namespace SensorProject.Models
     public class BaseIranianAgent
     {
         protected string AgentType;
-        public int SensorAmount { get; set; }
-        public List<string> Weaknesses { get; }
+        protected int SensorAmount { get; set; }
+        public List<string> Weaknesses { get; set; }
 
         public BaseIranianAgent(List<string> allSensorTypes)
         {
@@ -19,7 +19,7 @@ namespace SensorProject.Models
             Weaknesses = GenerateWeaknesses(allSensorTypes);
         }
 
-        public virtual List<string> GenerateWeaknesses(List<string> allSensorTypes)
+        protected  List<string> GenerateWeaknesses(List<string> allSensorTypes)
         {
             var rand = new Random();
             var weaknesses = new List<string>();
@@ -39,6 +39,10 @@ namespace SensorProject.Models
         public string RevealAgentType()
         {
             return $"{AgentType}";
+        }
+        public int RevealSensorAmount()
+        {
+            return SensorAmount;
         }
     }
 }

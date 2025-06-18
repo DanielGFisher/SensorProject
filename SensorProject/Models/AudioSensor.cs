@@ -9,8 +9,6 @@ namespace SensorProject.Models
     public class AudioSensor : BaseSensor
     {
 
-        public AudioSensor(string name) : base(name)
-        {
-        }
+        public AudioSensor(string name) : base(name) { }
     }
 }

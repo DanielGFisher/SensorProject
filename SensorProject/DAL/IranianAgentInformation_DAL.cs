@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SensorProject.DAL
 {
-    internal class BaseIranianAgent_DAL
+    internal class IranianAgentInformation_DAL
     {
 
     }

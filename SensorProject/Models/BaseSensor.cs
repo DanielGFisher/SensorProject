@@ -22,20 +22,14 @@ namespace SensorProject.Models
             Uses = 0;
         }
 
-        public int IncreaseUsage()
-        {
-            return Uses++;
-        }
         public virtual bool Activate(BaseIranianAgent agent)
         {
             if (!IsActive || HasMatched) return false;
-
             if (agent.Weaknesses.Contains(SensorName))
             {
                 HasMatched = true;
                 return true;
             }
-
             return false;
         }
     }

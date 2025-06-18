@@ -6,30 +6,15 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Models
 {
-    internal class OrganisationLeader : BaseIranianAgent
+    public class OrganisationLeader : SquadLeader
     {
-        private int turnCount = 0;
-
-        public OrganisationLeader(List<string> allSensorTypes) : base(allSensorTypes)
+        public OrganisationLeader(List<string> types) : base(types)
         {
-            AgentType = "Squad-Leader";
+            AgentType = "Organisation-Leader";
             SensorAmount = 8;
-        }
-
-        public int RemoveSensor(List<BaseSensor> sensors)
-        {
-            turnCount++;
-
-            if (turnCount % 3 == 0 && sensors.Count > 0)
-            {
-                Random rand = new Random();
-                int index = rand.Next(sensors.Count);
-                Console.WriteLine($"Sensor Sabotaged: {sensors[index].SensorName}");
-                sensors.RemoveAt(index);
-                return index;
-            }
-            return -1;
+            Weaknesses = GenerateWeaknesses(types);
         }
     }
 }
+
 

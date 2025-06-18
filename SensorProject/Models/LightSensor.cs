@@ -17,7 +17,7 @@ namespace SensorProject.Models
 
             string intel = agent.RevealAgentType();
             return $"The operative type is - {intel}" +
-                $"The operative sensor amount is - {agent.SensorAmount}";
+                $"$The operative sensor amount is - {agent.RevealSensorAmount()}";
         }
     }
 }
