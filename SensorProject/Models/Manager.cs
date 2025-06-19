@@ -1,18 +1,30 @@
-﻿using SensorProject.Factories;
+﻿using SensorProject.DAL;
+using SensorProject.Factories;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SensorProject.Models
 {
     public class Manager
     {
+        private string playerConnectionString = null;
         private List<BaseSensor> sensors = new List<BaseSensor>();
         private BaseIranianAgent agent;
         private Dictionary<string, int> matchedWeaknesses = new Dictionary<string, int>();
         private IranianAgentFactory AgentFactory = new();
         private SensorFactory SensorFactory = new();
-        private int level = 1;
+        public Player currentPlayer;
 
+
+        public void UserHandling()
+        {
+            int selection = UserMenu();
+
+            if (selection == 1) currentPlayer = LogIn();
+            if (selection == 2) currentPlayer = SignUp();
+            if (selection == 3) Environment.Exit(0);
+        }
         public void StartGame()
         {
             Console.WriteLine("- Game Starting -\n");
@@ -20,18 +32,21 @@ namespace SensorProject.Models
             bool gameRunning = true;
             while (gameRunning)
             {
-                Console.WriteLine($"Level - {level}");
+                Console.WriteLine($"Level - {currentPlayer.Level}");
                 bool levelComplete = PlayLevel();
 
                 if (levelComplete)
                 {
-                    if (level == 4)
+                    if (currentPlayer.Level == 4)
                     {
                         Console.WriteLine("Mission Complete - You Win!");
                         gameRunning = false;
                     }
-                    Console.WriteLine($"Level {level} Complete! Advancing to the next level\n");
-                    level++;
+                    Console.WriteLine($"Level {currentPlayer.Level} Complete! Advancing to the next level\n");
+                    currentPlayer.Level++;
+
+                    PlayerDal dal = new PlayerDal(playerConnectionString);
+                    dal.UpdatePlayerLevel(currentPlayer.Name, currentPlayer.Level);
                 }
                 else
                 {
@@ -45,7 +60,7 @@ namespace SensorProject.Models
         {
             matchedWeaknesses.Clear();
             sensors.Clear();
-            agent = AgentFactory.CreateAgent(level);
+            agent = AgentFactory.CreateAgent(currentPlayer.Level);
 
             Console.WriteLine($"You are facing: {agent.RevealAgentType()}");
             Console.WriteLine($"Agent weaknesses: {agent.RevealWeaknesses()}");
@@ -175,6 +190,64 @@ namespace SensorProject.Models
                 }
             }
             return count;
+        }
+
+        public int UserMenu()
+        {
+            while (true)
+            {
+                Console.WriteLine("- Menu -" +
+                    "\n1) Log in" +
+                    "\n2) Sign up" +
+                    "\n3) Exit");
+                bool success = int.TryParse(Console.ReadLine(), out int result);
+
+                if (success && (result == 1 || result == 2 || result == 3))
+                {
+                    return result;
+                }
+                Console.WriteLine("Invalid input! Please select 1 or 2.");
+            }
+        }
+
+        public Player SignUp()
+        {
+            Console.WriteLine("Please insert your username:");
+            string name = Console.ReadLine();
+
+            Player newPlayer = new(name, 1);
+            playerConnectionString = "sql connection string"; // Not yet implemented
+            PlayerDal dal = new PlayerDal(playerConnectionString);
+
+            if (dal.GetPlayerByUsername(name) != null)
+            {
+                Console.WriteLine("Username already exists - Please log in instead");
+                return null;
+            }
+
+            dal.InsertPlayer(newPlayer);
+            Console.WriteLine($"Welcome, {newPlayer.Name}!");
+            return newPlayer;
+        }
+
+
+        public Player LogIn()
+        {
+            Console.WriteLine("Enter your username:");
+            string name = Console.ReadLine();
+
+            playerConnectionString = "sql connection string"; // Not yet implemented
+            PlayerDal dal = new PlayerDal(playerConnectionString);
+            Player player = dal.GetPlayerByUsername(name);
+
+            if (player == null)
+            {
+                Console.WriteLine("Player not found - Input error");
+                return null;
+            }
+
+            Console.WriteLine($"Welcome back, {player.Name}!");
+            return player;
         }
 
     }

@@ -1,48 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SensorProject.Models
+﻿public class BaseIranianAgent
 {
-    public class BaseIranianAgent
+    public string AgentType { get; set; }
+    public int SensorAmount { get; set; }
+    public List<string> Weaknesses { get; set; } = new();
+
+    public BaseIranianAgent() { }
+
+    public BaseIranianAgent(List<string> allSensorTypes)
     {
-        protected string AgentType;
-        protected int SensorAmount { get; set; }
-        public List<string> Weaknesses { get; set; }
+        AgentType = "Foot-Soldier";
+        SensorAmount = 2;
+        Weaknesses = GenerateWeaknesses(allSensorTypes);
+    }
 
-        public BaseIranianAgent(List<string> allSensorTypes)
+    protected List<string> GenerateWeaknesses(List<string> allSensorTypes)
+    {
+        var rand = new Random();
+        var weaknesses = new List<string>();
+        for (int i = 0; i < SensorAmount; i++)
         {
-            AgentType = "Foot-Soldier";
-            SensorAmount = 2;
-            Weaknesses = GenerateWeaknesses(allSensorTypes);
+            var sensor = allSensorTypes[rand.Next(allSensorTypes.Count)];
+            weaknesses.Add(sensor);
         }
+        return weaknesses;
+    }
 
-        protected  List<string> GenerateWeaknesses(List<string> allSensorTypes)
-        {
-            var rand = new Random();
-            var weaknesses = new List<string>();
-            for (int i = 0; i < SensorAmount; i++)
-            {
-                var sensor = allSensorTypes[rand.Next(allSensorTypes.Count)];
-                weaknesses.Add(sensor);
-            }
-            return weaknesses;
-        }
-
-        public string RevealWeaknesses()
-        {
-            return string.Join(", ", Weaknesses);
-        }
-
-        public string RevealAgentType()
-        {
-            return $"{AgentType}";
-        }
-        public int RevealSensorAmount()
-        {
-            return SensorAmount;
-        }
+    public string RevealWeaknesses()
+    {
+        return string.Join(", ", Weaknesses);
+    }
+    public string RevealAgentType()
+    {
+        return AgentType;
+    }
+    public int RevealSensorAmount()
+    {
+        return SensorAmount;
     }
 }
