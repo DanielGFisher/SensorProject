@@ -9,7 +9,7 @@
 --     HasMatched BOOLEAN DEFAULT FALSE
 -- );
 -- 
--- CREATE TABLE Agents (
+-- CREATE TABLE IranianAgents (
 --     AgentID INT PRIMARY KEY AUTO_INCREMENT,
 --     AgentType VARCHAR(50) NOT NULL,
 --     Weaknesses TEXT NOT NULL,
@@ -25,7 +25,7 @@
 --     FOREIGN KEY (AgentID) REFERENCES Agents(AgentID)
 -- );
 
--- CREATE TABLE people (
+-- CREATE TABLE People (
 --   id INT PRIMARY KEY,
 --   first_name VARCHAR(100),
 --   last_name VARCHAR(100),

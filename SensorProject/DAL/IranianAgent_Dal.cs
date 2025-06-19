@@ -1,34 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using SensorProject.Models;
 
 namespace SensorProject.DAL
 {
-    public class AgentConfig
+    public class IranianAgent_Dal
     {
-        public int Level { get; set; }
-        public string AgentType { get; set; } = string.Empty;
-        public int SensorAmount { get; set; }
-        public List<string> Weaknesses { get; set; } = new();
-    }
+        private readonly ConnectionDal _connectionDal;
 
-    public class AgentDal
-    {
-        private readonly string _connectionString;
-
-        public AgentDal(string connectionString)
+        public IranianAgent_Dal(string connectionString)
         {
-            _connectionString = connectionString;
+            _connectionDal = new ConnectionDal(connectionString);
         }
 
-        private MySqlConnection CreateConnection()
+        public BaseIranianAgent GetAgentByLevel(int level)
         {
-            MySqlConnection conn = new(_connectionString);
-            conn.Open();
-            return conn;
+            BaseIranianAgent config = null;
+
+            using var conn = _connectionDal.CreateConnection();
+            string query = @"
+                SELECT a.level, a.agentType, a.sensorAmount, w.weakness
+                FROM agents a
+                LEFT JOIN weaknesses w ON a.level = w.agentLevel
+                WHERE a.level = @level;
+            ";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@level", level);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                if (config == null)
+                {
+                    config = new BaseIranianAgent
+                    {
+                        AgentType = reader.GetString("agentType"),
+                        SensorAmount = reader.GetInt32("sensorAmount"),
+                        Weaknesses = new List<string>()
+                    };
+                }
+
+                if (!reader.IsDBNull(reader.GetOrdinal("weakness")))
+                {
+                    config.Weaknesses.Add(reader.GetString("weakness"));
+                }
+            }
+
+            return config;
         }
     }
 }
