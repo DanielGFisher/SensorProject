@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Interfaces
 {
-    interface ISensorFactory
+    public interface ISensorFactory
     {
         BaseSensor CreateSensor(string type);
     }

@@ -36,3 +36,9 @@
 --   affiliation VARCHAR(100),
 --   is_exposed BOOLEAN DEFAULT FALSE
 -- );
+
+-- CREATE TABLE Player (
+--     id INT PRIMARY KEY AUTO_INCREMENT,
+--     username VARCHAR(50) NOT NULL UNIQUE,
+--     level INT NOT NULL DEFAULT 1
+-- );

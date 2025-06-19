@@ -21,7 +21,8 @@ namespace SensorProject.Factories
             if (type == "SIGNAL") return new SignalSensor("Signal");
             if (type == "LIGHT") return new LightSensor("Light");
 
-            else return null!;
+            else return null;
+            throw new ArgumentException($"Sensor type '{type}' is invalid.");
         }
     }
 }

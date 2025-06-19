@@ -6,23 +6,16 @@ namespace SensorProject.DAL
 {
     public class PlayerDal
     {
-        private readonly string _connectionString;
+        private readonly ConnectionDal _connectionDal;
 
         public PlayerDal(string connectionString)
         {
-            _connectionString = connectionString;
-        }
-
-        private MySqlConnection CreateConnection()
-        {
-            var conn = new MySqlConnection(_connectionString);
-            conn.Open();
-            return conn;
+            _connectionDal = new ConnectionDal(connectionString);
         }
 
         public void InsertPlayer(Player player)
         {
-            using var conn = CreateConnection();
+            using var conn = _connectionDal.CreateConnection();
             string query = "INSERT INTO players (username, level) VALUES (@username, @level)";
 
             using var cmd = new MySqlCommand(query, conn);
@@ -34,7 +27,7 @@ namespace SensorProject.DAL
 
         public Player GetPlayerByUsername(string username)
         {
-            using var conn = CreateConnection();
+            using var conn = _connectionDal.CreateConnection();
             string query = "SELECT username, level FROM players WHERE username = @username LIMIT 1";
 
             using var cmd = new MySqlCommand(query, conn);
@@ -52,11 +45,10 @@ namespace SensorProject.DAL
 
             return null;
         }
+
         public void UpdatePlayerLevel(string username, int newLevel)
         {
-            using var conn = new MySqlConnection(_connectionString);
-            conn.Open();
-
+            using var conn = _connectionDal.CreateConnection();
             string query = "UPDATE players SET level = @level WHERE username = @username";
 
             using var cmd = new MySqlCommand(query, conn);
@@ -65,6 +57,5 @@ namespace SensorProject.DAL
 
             cmd.ExecuteNonQuery();
         }
-
     }
 }
