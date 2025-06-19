@@ -9,9 +9,9 @@ namespace SensorProject.Models
     public class Manager
     {
         private string playerConnectionString = null;
-        private List<BaseSensor> sensors = new List<BaseSensor>();
+        private List<BaseSensor> sensors = new();
         private BaseIranianAgent agent;
-        private Dictionary<string, int> matchedWeaknesses = new Dictionary<string, int>();
+        private Dictionary<string, int> matchedWeaknesses = new();
         private IranianAgentFactory AgentFactory = new();
         private SensorFactory SensorFactory = new();
         public Player currentPlayer;

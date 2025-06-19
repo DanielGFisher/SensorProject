@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SensorProject.Interfaces
 {
-    interface IIranianFactory
+    public interface IIranianFactory
     {
         BaseIranianAgent CreateAgent(int level);
     }
